@@ -45,6 +45,8 @@ and fill in user details and the volumes to mount. Run `id` on your local host
 to get your username, groupname, UID and GID. If the UID and GID is not both
 1000, set that also in the args above.
 
+Also, add volume mounts of the project folders you want to access inside the
+container.
 
 3) Add a domain name `main` to your `/etc/hosts` file that point to `127.0.0.1`.
 
@@ -57,22 +59,73 @@ Host main
   User <username>
 ```
 
+5) Build the base and main images:
+
+```bash
+docker build -f base/Dockerfile -t iso:base .
+docker-compose build main
+```
+
 ## Using the container
 
 Start the container with:
 
 ```bash
-docker-compose build
-docker-compose up -d
+docker-compose up -d main
 ```
 
-Log into the container with:
+SSH into the container with:
 
 ```bash
 ssh main
 ```
 
+## Adding custom containers
+
+In this example we will call the container `custom` but you can replace it.
+
+Add the custom service to the `docker-compose.override.yml` file:
+
+```none
+  custom:
+    build:
+      context: ./custom
+      args:
+        - USER=<user>
+        - GROUP=<group>
+        - FULL_NAME="<fullname>"
+        - EMAIL="<email>"
+    ports:
+      - "8122:22"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/<user>/Projects:/home/<user>/Projects
+```
+
+and fill in as in step 2) in setup. Note we are using port `8122` now.
+
+Repeat steps 3) and 4) in setup, only changing the host name to `custom` and
+using the same port that the custom service in exporting.
+
+```bash
+# if you don't have these images yet, build them:
+docker build -f base/Dockerfile -t iso:base .
+docker-compose build main
+
+docker-compose build custom
+docker-compose up -d custom
+ssh custom
+```
+
 ## Building base image
+
+Building local image:
+
+```bash
+docker build -f base/Dockerfile -t iso:base .
+```
+
+Building remote image:
 
 ```bash
 cat ~/<your-github-key> | docker login docker.pkg.github.com -u <your-github-user> --password-stdin

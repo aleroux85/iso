@@ -1,4 +1,5 @@
-FROM docker.pkg.github.com/aleroux85/iso/base:0.1
+FROM iso:base
+# FROM docker.pkg.github.com/<your-github-user>/iso/base:0.1
 
 ARG USER
 ARG GROUP
@@ -41,7 +42,14 @@ RUN git config --global user.name "${FULL_NAME}"
 RUN git config --global user.email "${EMAIL}"
 RUN git config --global core.editor vim
 
-# do your own setup and configuration here
+# Add setup and configuration here that are be custom, yet general across
+# your custom containers
+
+# use oh-my-zsh
+# RUN sudo apt-get update -y && sudo apt-get install zsh -y
+# RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+# RUN sudo sed -i "/${USER}/s/\/bin\/bash/\/usr\/bin\/zsh/" /etc/passwd
+# RUN sed -i /ZSH_THEME/s/robbyrussell/bira/ ~/.zshrc
 
 USER root
 CMD ["/usr/sbin/sshd", "-D"]
