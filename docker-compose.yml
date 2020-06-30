@@ -3,6 +3,7 @@ services:
   main:
     image: iso:main
     build: .
+    hostname: main
     ports:
       - "8022:22"
     volumes:

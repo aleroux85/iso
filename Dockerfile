@@ -24,7 +24,6 @@ ADD ./id_rsa.pub /root/.ssh/authorized_keys
 RUN chmod 600 /root/.ssh/authorized_keys
 RUN ssh-keygen -b 4096 -t rsa -f /root/.ssh/id_rsa -q -N ""
 
-RUN apt-get install -y sudo
 RUN adduser ${USER} sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
